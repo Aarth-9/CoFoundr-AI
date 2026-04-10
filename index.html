@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoFoundr AI | Workspace</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Markdown & PDF Parsers -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    
+    <!-- Ambient Background Bubbles for Glassmorphism Context -->
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Login Gateway -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-card glass-card">
+            <div class="logo-area" style="border: none; justify-content: center; padding-bottom: 5px; flex-direction: column; gap: 4px;">
+                <div class="logo-icon" style="font-size: 32px;"><i class="fa-solid fa-layer-group"></i></div>
+                <div class="logo-text" style="font-size: 24px;">CoFoundr <span>AI</span></div>
+            </div>
+            <p style="text-align: center; color: var(--text-secondary); font-size: 14px; margin-bottom: 30px;">Sign in to your workspace</p>
+            
+            <div class="input-group" style="width: 100%;">
+                <label>Username</label>
+                <input type="text" id="login-user" placeholder="idea, manager, or founder">
+            </div>
+            <div class="input-group" style="width: 100%; margin-top: 15px;">
+                <label>Password</label>
+                <input type="password" id="login-pass" placeholder="••••••">
+            </div>
+            <div id="login-error" style="color: var(--accent-red); font-size: 13px; margin-top: 15px; text-align: center; display: none;">Invalid credentials</div>
+            
+            <button id="login-btn" class="primary-btn" style="width: 100%; justify-content: center; margin-top: 25px; padding: 14px;">Sign In <i class="fa-solid fa-arrow-right"></i></button>
+            
+            <div style="margin-top: 25px; font-size: 11px; color: var(--text-secondary); text-align: center;">
+                <p><strong>Demo Roles:</strong><br>idea/123 • manager/123 • founder/admin</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-layout" class="app-layout" style="display: none;">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fa-solid fa-layer-group"></i></div>
+                <div class="logo-text">CoFoundr <span>AI</span></div>
+            </div>
+
+
+
+            <div class="sidebar-nav">
+                <div class="nav-label">Workspace</div>
+                
+                <!-- IDEA MODE MENU -->
+                <ul id="idea-menu" class="menu-group active">
+                    <li class="menu-item active" data-target="panel-brainstorm"><i class="fa-solid fa-brain"></i> Brainstorm Agent</li>
+                    <li class="menu-item" data-target="panel-actionplan" id="menu-actionplan" style="display:none; color: var(--accent-purple);"><i class="fa-solid fa-bolt"></i> Execution Blueprint</li>
+                    <li class="menu-item" data-target="panel-pitch"><i class="fa-solid fa-person-chalkboard"></i> Pitch Deck Factory</li>
+                    <li class="menu-item" data-target="panel-market"><i class="fa-solid fa-globe"></i> Market Research</li>
+                    <li class="menu-item" data-target="panel-competitor"><i class="fa-solid fa-bullseye"></i> Competitor Analysis</li>
+                    <li class="menu-item" data-target="panel-gtm"><i class="fa-solid fa-rocket"></i> Go-to-Market Auto-Pilot</li>
+                </ul>
+
+                <!-- MANAGER MODE MENU -->
+                <ul id="manager-menu" class="menu-group" style="display: none;">
+                    <li class="menu-item active" data-target="panel-metrics"><i class="fa-solid fa-chart-line"></i> Operations Command</li>
+                    <li class="menu-item" data-target="panel-health"><i class="fa-solid fa-server"></i> Deployment Health</li>
+                    <li class="menu-item" data-target="panel-resources"><i class="fa-solid fa-users-gear"></i> Resource Allocation</li>
+                    <li class="menu-item" data-target="panel-funnel"><i class="fa-solid fa-chart-pie"></i> Funnel Analytics</li>
+                    <li class="menu-item" data-target="panel-architecture"><i class="fa-solid fa-network-wired"></i> Agent Architecture</li>
+                </ul>
+
+                <!-- FOUNDER MODE MENU -->
+                <ul id="founder-menu" class="menu-group" style="display: none;">
+                    <li class="menu-item active" data-target="panel-founder-hub"><i class="fa-solid fa-earth-americas"></i> Global Administration</li>
+                    <li class="menu-item" data-target="panel-investor"><i class="fa-solid fa-handshake"></i> Investor Relations</li>
+                    <li class="menu-item" data-target="panel-billing"><i class="fa-solid fa-file-invoice-dollar"></i> Enterprise Billing</li>
+                    <li class="menu-item" data-target="panel-audit"><i class="fa-solid fa-shield-halved"></i> Security & Audit Logs</li>
+                </ul>
+
+            </div>
+
+            <div class="user-profile">
+                <div class="avatar" id="logged-avatar"><i class="fa-solid fa-user"></i></div>
+                <div class="user-info">
+                    <strong id="logged-user-name">Founder Profile</strong>
+                    <span id="logged-user-role">Pro Tier • Connected</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Canvas -->
+        <main class="main-content">
+            
+            <!-- PANEL: Idea Mode - Brainstorming -->
+            <section id="panel-brainstorm" class="content-panel active">
+                <header class="panel-header">
+                    <div>
+                        <h2>Idea Validation</h2>
+                        <p>Chat with your Y-Combinator AI Partner to stress-test your startup assumptions.</p>
+                    </div>
+                </header>
+                
+                <div class="chat-interface">
+                    <div id="chat-history" class="chat-history">
+                        <div class="message ai-message">
+                            <div class="msg-avatar"><i class="fa-solid fa-robot"></i></div>
+                            <div class="msg-bubble">Hello! I'm your friendly AI consulting partner from CoFoundr AI. I would love to hear your startup idea—please feel free to share it with me, and we can explore ways to make it even stronger together!</div>
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <textarea id="chat-input" placeholder="We are building an AI SaaS platform that..." rows="1"></textarea>
+                        <button id="chat-send"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANEL: Action Plan -->
+            <section id="panel-actionplan" class="content-panel">
+                <header class="panel-header">
+                    <div>
+                        <h2>Execution Blueprint</h2>
+                        <p>Your finalized startup strategy synthesized by our LangGraph execution engine.</p>
+                    </div>
+                </header>
+                <div class="deck-container" style="box-shadow: inset 0 2px 20px rgba(139, 92, 246, 0.4); border: 1px solid var(--accent-purple);">
+                    <div id="action-plan-output" class="markdown-preview"></div>
+                </div>
+            </section>
+
+            <!-- PANEL: Idea Mode - Pitch Deck -->
+            <section id="panel-pitch" class="content-panel">
+                <header class="panel-header">
+                    <div>
+                        <h2>Pitch Deck Generation</h2>
+                        <p>Synthesize our brainstorm into an actionable, presentation-ready Markdown Pitch Deck.</p>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button id="download-pdf-btn" class="primary-btn" style="background: rgba(255,255,255,0.05); box-shadow: none; border: 1px solid var(--border-bright);"><i class="fa-solid fa-download"></i> PDF</button>
+                        <button id="generate-pitch-btn" class="primary-btn"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate Deck</button>
+                    </div>
+                </header>
+                
+                <div class="deck-container" id="pitch-export-target" style="flex: 0.85; margin-bottom: 24px;">
+                    <div id="deck-output" class="markdown-preview">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-file-powerpoint"></i>
+                            <h3>No Deck Generated</h3>
+                            <p>Brainstorm your idea first, then click "Generate Deck" up top to construct your slides.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area" style="border-radius: 16px;">
+                    <textarea id="deck-feedback-input" placeholder="Optional Feedback: e.g. 'Make the TAM slide more aggressive'..." rows="1" style="height: 56px;"></textarea>
+                    <button id="deck-update-btn"><i class="fa-solid fa-arrow-up"></i></button>
+                </div>
+            </section>
+
+            <!-- PANEL: Manager Mode - Analytics & Kanban -->
+            <section id="panel-metrics" class="content-panel">
+                <header class="panel-header">
+                    <div>
+                        <h2>Operations Dashboard</h2>
+                        <p>Input your company KPIs. Our AI Risk Analyst and Growth Hacker will synthesize your strategy.</p>
+                    </div>
+                </header>
+                
+                <div class="kpi-form glass-card">
+                    <div class="input-group">
+                        <label>MRR (Monthly Revenue)</label>
+                        <input type="text" id="kpi-mrr" value="$15,000">
+                    </div>
+                    <div class="input-group">
+                        <label>Monthly Burn Rate</label>
+                        <input type="text" id="kpi-burn" value="$22,000">
+                    </div>
+                    <div class="input-group">
+                        <label>User Churn %</label>
+                        <input type="text" id="kpi-churn" value="8.5%">
+                    </div>
+                    <button id="analyze-kpi-btn" class="primary-btn">Analyze Strategy</button>
+                </div>
+
+                <div class="kanban-wrapper">
+                    <h3>AI Strategy Board</h3>
+                    <div class="kanban-board">
+                        
+                        <div class="kanban-col board-risks">
+                            <div class="col-header">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Identified Risks
+                            </div>
+                            <div id="kanban-risk-items" class="col-items">
+                                <!-- Cards injected here -->
+                                <div class="empty-card">Pending Analysis...</div>
+                            </div>
+                        </div>
+
+                        <div class="kanban-col board-todo">
+                            <div class="col-header">
+                                <i class="fa-solid fa-list-check"></i> Tactical Backlog (To-Do)
+                            </div>
+                            <div id="kanban-task-items" class="col-items">
+                                <!-- Cards injected here -->
+                                <div class="empty-card">Pending Analysis...</div>
+                            </div>
+                        </div>
+
+                        <div class="kanban-col board-doing">
+                            <div class="col-header">
+                                <i class="fa-solid fa-spinner"></i> In Progress
+                            </div>
+                            <div class="col-items">
+                                <!-- Dummy mock -->
+                                <div class="kanban-card">Ensure product-market fit.</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            <!-- PANEL: Founder Admin Hub -->
+            <section id="panel-founder-hub" class="content-panel">
+                <header class="panel-header">
+                    <div>
+                        <h2>Administration Hub</h2>
+                        <p>Global oversight of company vitals, personnel, and members.</p>
+                    </div>
+                </header>
+                
+                <div class="admin-grid">
+                    <!-- Top Widget: Financials -->
+                    <div class="glass-card admin-widget full-width">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-sack-dollar"></i> Global Financials</h3>
+                        </div>
+                        <div class="financial-stats">
+                            <div class="stat-box">
+                                <span class="stat-label">Net MRR</span>
+                                <span class="stat-value text-neon-blue">$82,450</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-label">Gross Vol. (30d)</span>
+                                <span class="stat-value">$114,200</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-label">Active Subs</span>
+                                <span class="stat-value">1,402</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-label">Recent Payment</span>
+                                <span class="stat-value text-green">+$4,200 (Stripe)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Left: Managers Registry -->
+                    <div class="glass-card admin-widget">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-user-tie"></i> Managers Registry</h3>
+                        </div>
+                        <table class="admin-table">
+                            <thead>
+                                <tr><th>Manager ID</th><th>Department</th><th>Status</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>@alex_ops</strong></td>
+                                    <td>Operations</td>
+                                    <td><span class="badge badge-active">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>@sarah_growth</strong></td>
+                                    <td>Marketing</td>
+                                    <td><span class="badge badge-active">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>@mike_dev</strong></td>
+                                    <td>Engineering</td>
+                                    <td><span class="badge badge-away">Away</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Right: Active Members -->
+                    <div class="glass-card admin-widget">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-users"></i> Platform Members</h3>
+                        </div>
+                        <table class="admin-table">
+                            <thead>
+                                <tr><th>User Email</th><th>Tier</th><th>Joined</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>investor@yc.com</td>
+                                    <td><span class="badge badge-pro">Pro</span></td>
+                                    <td>Oct 12</td>
+                                </tr>
+                                <tr>
+                                    <td>johndoe@gmail.com</td>
+                                    <td><span class="badge badge-free">Free</span></td>
+                                    <td>Oct 14</td>
+                                </tr>
+                                <tr>
+                                    <td>startup_ceo@tech.io</td>
+                                    <td><span class="badge badge-pro">Pro</span></td>
+                                    <td>Oct 14</td>
+                                </tr>
+                                <tr>
+                                    <td>beta_tester@dev.net</td>
+                                    <td><span class="badge badge-free">Free</span></td>
+                                    <td>Oct 15</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            <!-- =========================== -->
+            <!-- NEW: SaaS Suite AI Panels -->
+            <!-- =========================== -->
+
+            <section id="panel-market" class="content-panel">
+                <header class="panel-header">
+                    <div><h2>Market Research Intel</h2><p>AI-driven consumer insights based on your finalized idea.</p></div>
+                    <button id="generate-market-btn" class="primary-btn"><i class="fa-solid fa-satellite-dish"></i> Execute Research</button>
+                </header>
+                <div class="deck-container">
+                    <div id="market-output" class="markdown-preview">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-globe"></i>
+                            <h3>Global Market Context</h3>
+                            <p>Finalize your brainstorm chat, then click 'Execute' to invoke the Groq Strategy Researcher.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-competitor" class="content-panel">
+                <header class="panel-header">
+                    <div><h2>Competitor Matrix</h2><p>Use OpenAI to deduce your 3 greatest startup competitors.</p></div>
+                    <button id="scan-competitor-btn" class="primary-btn"><i class="fa-solid fa-radar"></i> Scan Competitors</button>
+                </header>
+                <div class="admin-grid" id="competitor-grid" style="margin-top:20px;">
+                    <div class="glass-card" style="padding: 20px; text-align: center; border: 1px dashed var(--accent-purple);">
+                        <i class="fa-solid fa-radar" style="font-size: 2rem; color: var(--text-secondary); margin-top: 20px; margin-bottom: 10px;"></i>
+                        <h3 style="color: var(--text-primary);">Awaiting Target</h3>
+                        <p style="color: var(--text-secondary); font-size: 12px;">Finalize your idea, then click Scan.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-gtm" class="content-panel">
+                <header class="panel-header">
+                    <div><h2>Go-To-Market Auto-Pilot</h2><p>Extrapolate your Brainstorm session into an elite 4-Phase Growth Strategy.</p></div>
+                    <button id="generate-gtm-btn" class="primary-btn"><i class="fa-solid fa-rocket"></i> Generate Execution Plan</button>
+                </header>
+                <div class="deck-container">
+                     <div id="gtm-output" class="markdown-preview">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-funnel-dollar"></i>
+                            <h3>No Strategy Generated</h3>
+                            <p>Finalize your brainstorm chat, then click 'Generate' to invoke the OpenAI Growth Hacker.</p>
+                        </div>
+                     </div>
+                </div>
+            </section>
+
+            <section id="panel-health" class="content-panel">
+                <header class="panel-header">
+                    <div><h2>Deployment Health</h2><p>Simulated Live Latency from AWS Environments.</p></div>
+                    <button id="health-btn" class="primary-btn">Refresh Systems</button>
+                </header>
+                <div class="deck-container" id="health-output" style="border-style: dashed; justify-content: center; align-items: center; min-height: 300px; padding: 20px; flex-direction: column;">
+                    <div style="width: 100%; height: 200px; position: relative;">
+                        <canvas id="chart-health-line"></canvas>
+                    </div>
+                    <div style="display: flex; justify-content: space-around; width: 100%; margin-top: 30px;">
+                        <div style="text-align: center;">
+                            <div class="radial-wedge" style="background: conic-gradient(var(--accent-blue) 0% 24%, rgba(255,255,255,0.05) 24% 100%);"><span>24%</span></div>
+                            <h3 style="color: var(--text-primary);">Avg CPU Load</h3>
+                        </div>
+                        <div style="text-align: center;">
+                            <div class="radial-wedge" style="background: conic-gradient(var(--accent-purple) 0% 61%, rgba(255,255,255,0.05) 61% 100%);"><span>61%</span></div>
+                            <h3 style="color: var(--text-primary);">Memory Usage</h3>
+                        </div>
+                        <div style="text-align: center;">
+                            <div class="radial-wedge" style="background: conic-gradient(var(--accent-green) 0% 99.9%, rgba(255,255,255,0.05) 99.9% 100%);"><span>99.9%</span></div>
+                            <h3 style="color: var(--text-primary);">Cluster Uptime</h3>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-resources" class="content-panel">
+               <header class="panel-header">
+                    <div><h2>Resource Allocation</h2><p>Engineer sprint velocity and cloud spend optimization.</p></div>
+                    <button id="resource-btn" class="primary-btn">Calculate Velocity</button>
+               </header>
+               <div class="deck-container" id="resource-output" style="border-style: dashed; justify-content: center; align-items: center; min-height: 350px; padding: 20px; flex-direction: column;">
+                    <div style="width: 100%; height: 200px; position: relative;">
+                        <canvas id="chart-resources-bar"></canvas>
+                    </div>
+                    <div style="display: flex; gap: 40px; width: 100%; justify-content: space-around; margin-top: 30px;">
+                        <div style="text-align: center;">
+                            <div class="radial-wedge" style="background: conic-gradient(var(--accent-blue) 0% 45%, rgba(255,255,255,0.05) 45% 100%);"><span>45%</span></div>
+                            <h3 style="color: var(--text-primary);">Frontend Core</h3>
+                        </div>
+                        <div style="text-align: center;">
+                            <div class="radial-wedge" style="background: conic-gradient(var(--accent-purple) 0% 35%, rgba(255,255,255,0.05) 35% 100%);"><span>35%</span></div>
+                            <h3 style="color: var(--text-primary);">Backend Ops</h3>
+                        </div>
+                        <div style="text-align: center;">
+                            <div class="radial-wedge" style="background: conic-gradient(var(--accent-info) 0% 20%, rgba(255,255,255,0.15) 20% 100%);"><span>20%</span></div>
+                            <h3 style="color: var(--text-primary);">AI Tuning</h3>
+                        </div>
+                    </div>
+               </div>
+            </section>
+
+            <section id="panel-funnel" class="content-panel">
+                <header class="panel-header">
+                    <div><h2>Funnel Analytics</h2><p>Simulating User conversion drops from Landing to Checkout.</p></div>
+                    <button id="funnel-btn" class="primary-btn">Run Pipeline</button>
+                </header>
+                <div class="deck-container" id="funnel-output" style="border-style: dashed; justify-content: center; align-items: center; min-height: 350px; padding: 20px; flex-direction: column;">
+                     <div style="width: 100%; height: 250px; position: relative; display: flex; justify-content: center;">
+                         <canvas id="chart-funnel-pie"></canvas>
+                     </div>
+                     <div style="display: flex; justify-content: space-around; width: 100%; margin-top: 30px;">
+                         <div style="text-align: center;">
+                             <div class="radial-wedge" style="background: conic-gradient(rgba(255,255,255,0.05) 0% 100%, transparent);"><span>12.4k</span></div>
+                             <h3 style="color: var(--text-secondary);">Landing Hits</h3>
+                         </div>
+                         <div style="text-align: center;">
+                             <div class="radial-wedge" style="background: conic-gradient(var(--accent-purple) 0% 25.7%, rgba(255,255,255,0.05) 25.7% 100%);"><span>25.7%</span></div>
+                             <h3 style="color: var(--text-primary);">Signup Dropoff</h3>
+                         </div>
+                         <div style="text-align: center;">
+                             <div class="radial-wedge" style="background: conic-gradient(var(--accent-green) 0% 3.3%, rgba(255,255,255,0.05) 3.3% 100%);"><span>3.3%</span></div>
+                             <h3 style="color: var(--text-primary);">Paid Conversion</h3>
+                         </div>
+                     </div>
+                </div>
+            </section>
+
+            <section id="panel-architecture" class="content-panel">
+                <header class="panel-header">
+                    <div><h2>Agent Architecture</h2><p>Live visualization of the underlying LangGraph routing state machine.</p></div>
+                </header>
+                <div class="deck-container" style="min-height: 300px;">
+                    <div class="node-graph">
+                        <div class="lang-node lang-node-start">START</div>
+                        <div class="lang-edge"></div>
+                        <div class="lang-node">brainstorm_node</div>
+                        <div class="lang-edge" style="background:var(--accent-purple);"><div style="position:absolute; top:-20px; font-size:10px; color:var(--text-secondary);">finalize == True</div></div>
+                        <div class="lang-node" style="border-color:var(--accent-purple);">action_plan_node</div>
+                        <div class="lang-edge" style="background:var(--accent-red);"></div>
+                        <div class="lang-node lang-node-end">END</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="panel-investor" class="content-panel">
+                <header class="panel-header">
+                    <div><h2>Investor Relations</h2><p>Generate a customized, professional quarterly update email.</p></div>
+                    <button id="investor-btn" class="primary-btn">Draft Email</button>
+                </header>
+                <div class="deck-container">
+                     <div id="investor-output" class="markdown-preview">
+                        <div class="empty-state"><i class="fa-solid fa-vault"></i><p>Awaiting Command</p></div>
+                     </div>
+                </div>
+            </section>
+
+            <section id="panel-billing" class="content-panel">
+                <header class="panel-header">
+                    <div><h2>Enterprise Billing</h2><p>Simulating Stripe Invoice Syncs.</p></div>
+                    <button id="billing-btn" class="primary-btn">Fetch Ledger</button>
+                </header>
+                <div class="deck-container" id="billing-output" style="border-style: dashed; justify-content: center; align-items: center; min-height: 200px;">
+                     <div class="empty-state"><i class="fa-solid fa-credit-card"></i><p>Awaiting Connect</p></div>
+                </div>
+            </section>
+            
+            <section id="panel-audit" class="content-panel">
+                <header class="panel-header">
+                    <div><h2>Security & Audit Logs</h2><p>SOC2 Compliance Monitoring events.</p></div>
+                    <button id="audit-btn" class="primary-btn">Export Logs</button>
+                </header>
+                <div class="deck-container" id="audit-output" style="border-style: dashed; justify-content: center; align-items: center; min-height: 200px;">
+                     <div class="empty-state"><i class="fa-solid fa-shield-halved"></i><p>Awaiting Export</p></div>
+                </div>
+            </section>
+
+            <section id="panel-settings" class="content-panel">
+                <header class="panel-header"><div><h2>Platform Settings</h2><p>Configure your API keys, LLM preferences, and workspace UI.</p></div></header>
+                <div class="deck-container" style="justify-content: center; align-items: center; border-style: dashed;">
+                     <div class="empty-state" style="margin-top: 50px;"><i class="fa-solid fa-gears" style="font-size: 3rem; margin-bottom: 1rem; color: var(--border-bright);"></i><h3>System Config</h3><p>Settings are currently managed via the root `.env` file.</p></div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="./mockData.js"></script>
+    <script src="./script.js"></script>
+</body>
+</html>
